@@ -1,123 +1,395 @@
 .main-page {
+  --drawer-width: min(76vw, 23rem);
+  --handle-width: clamp(2rem, 3vw, 2.5rem);
+  --drawer-shadow: 0.35rem 0 0.9rem rgb(0 0 0 / 8%);
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #dff4df;
+  color: #141414;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.main-page button,
+.main-page input {
+  font: inherit;
+}
+
+.map-area {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #dff4df;
+}
+
+/* 상단 카테고리 */
+.category-bar {
+  position: absolute;
+  top: clamp(0.8rem, 1.5vw, 1.2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+
+  display: flex;
+  gap: clamp(0.5rem, 1vw, 0.9rem);
+}
+
+.category-button {
+  min-width: clamp(6rem, 9vw, 8.5rem);
+  height: clamp(2rem, 3vw, 2.5rem);
+
+  border: 0;
+  border-radius: 999rem;
+  background: #ffffff;
+  box-shadow: 0 0.25rem 0.75rem rgb(0 0 0 / 6%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+
+  color: #141414;
+  font-size: clamp(0.72rem, 0.9vw, 0.88rem);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.category-button.active {
+  outline: 0.12rem solid #75d7f5;
+}
+
+.category-icon {
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+}
+
+/* drawer 본체 + 버튼 */
+.left-drawer-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 30;
+
+  width: calc(var(--drawer-width) + var(--handle-width));
+  height: 100dvh;
+
+  display: flex;
+  align-items: stretch;
+
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.left-drawer-wrap.open {
+  transform: translate3d(0, 0, 0);
+}
+
+.left-drawer-wrap.closed {
+  transform: translate3d(calc(-1 * var(--drawer-width)), 0, 0);
+}
+
+/* 왼쪽 메뉴바 본체 */
+.left-drawer {
+  position: relative;
+  flex: 0 0 var(--drawer-width);
+
+  height: 100dvh;
   min-height: 100dvh;
-  padding: clamp(1rem, 4vw, 3rem);
-  background:
-    radial-gradient(circle at top left, rgba(216, 153, 245, 0.18), transparent 34rem),
-    linear-gradient(180deg, #fbfbff 0%, #f4f5fb 100%);
-  color: rgba(20, 20, 20, 0.92);
-  font-family:
-    "Pretendard",
-    "Noto Sans KR",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+
+  background: #ffffff;
+  box-shadow: var(--drawer-shadow);
+
+  overflow: hidden;
 }
 
-.main-hero {
-  width: min(100%, 76rem);
-  margin: 0 auto;
-  padding: clamp(1rem, 3vw, 2rem) 0;
+/* drawer 내부 내용 */
+.drawer-content {
+  height: 100%;
+  padding: clamp(0.9rem, 1.4vw, 1.2rem);
+  padding-bottom: clamp(5rem, 7vw, 6rem);
+  overflow: hidden;
 }
 
-.main-label {
-  margin: 0 0 0.45rem;
-  font-size: clamp(0.82rem, 2vw, 0.95rem);
+/* drawer 열고 닫는 버튼 */
+.drawer-toggle-button {
+  position: relative;
+
+  flex: 0 0 var(--handle-width);
+  align-self: center;
+
+  width: var(--handle-width);
+  height: clamp(4.4rem, 6vw, 5.4rem);
+  padding: 0;
+  margin-left: -0.05rem;
+
+  border: 0;
+  border-left: 0;
+  border-radius: 0 1.1rem 1.1rem 0;
+  background: #ffffff;
+  box-shadow: 0.35rem 0.2rem 0.75rem rgb(0 0 0 / 7%);
+
+  display: grid;
+  place-items: center;
+
+  color: #141414;
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
   font-weight: 800;
-  color: rgba(90, 64, 130, 0.9);
+  line-height: 1;
+  cursor: pointer;
+
+  transition:
+    background-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
 }
 
-.main-title {
-  margin: 0;
-  font-size: clamp(1.7rem, 5vw, 3rem);
-  line-height: 1.15;
-  letter-spacing: -0.06em;
-  color: rgba(20, 20, 20, 0.94);
+.drawer-toggle-button::before {
+  content: "";
+  position: absolute;
+  left: -0.15rem;
+  top: 0;
+
+  width: 0.2rem;
+  height: 100%;
+
+  background: #ffffff;
+  transition: background-color 0.22s ease;
 }
 
-.main-description {
-  max-width: 48rem;
-  margin: clamp(0.65rem, 2vw, 0.9rem) 0 0;
-  font-size: clamp(0.92rem, 2vw, 1.05rem);
-  line-height: 1.65;
-  color: rgba(20, 20, 20, 0.62);
+.drawer-toggle-button:hover {
+  background: #f4fbff;
+  color: #6f24b8;
+  box-shadow: 0.45rem 0.25rem 0.95rem rgb(0 0 0 / 10%);
+  transform: translateX(0.12rem);
 }
 
-.map-section {
-  width: min(100%, 76rem);
-  margin: 0 auto;
-  padding: clamp(0.8rem, 2.5vw, 1.15rem);
-  border-radius: clamp(1.2rem, 4vw, 2rem);
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(20, 20, 20, 0.06);
-  box-shadow: 0 1rem 2.6rem rgba(20, 20, 20, 0.08);
+.drawer-toggle-button:hover::before {
+  background: #ffffff;
 }
 
-.map-section-header {
+.drawer-toggle-button:active {
+  transform: translateX(0.06rem) scale(0.97);
+}
+
+.drawer-toggle-button:focus-visible {
+  outline: 0.16rem solid #75d7f5;
+  outline-offset: 0.15rem;
+}
+
+/* 메뉴 내부 */
+.drawer-header {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: clamp(0.75rem, 2vw, 1rem);
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: clamp(0.7rem, 1vw, 1rem);
 }
 
-.map-section-title {
-  display: block;
-  font-size: clamp(1rem, 2.4vw, 1.2rem);
-  color: rgba(20, 20, 20, 0.92);
+.profile-circle {
+  width: clamp(2.2rem, 3.2vw, 3rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #dff7ff;
+  flex-shrink: 0;
 }
 
-.map-section-description {
-  margin: 0.25rem 0 0;
-  font-size: clamp(0.78rem, 1.8vw, 0.9rem);
-  color: rgba(20, 20, 20, 0.56);
+.project-name {
+  color: #6f24b8;
+  font-size: clamp(0.68rem, 0.85vw, 0.82rem);
+  font-weight: 700;
 }
 
-.region-tags {
-  display: flex;
-  flex-wrap: wrap;
+/* 검색 */
+.search-box {
+  height: clamp(1.8rem, 2.4vw, 2.2rem);
+  margin-bottom: clamp(0.8rem, 1.2vw, 1.1rem);
+  padding-inline: 0.7rem;
+
+  border: 0.12rem solid #75d7f5;
+  border-radius: 999rem;
+  background: #ffffff;
+
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
   gap: 0.4rem;
 }
 
-.region-tags span {
-  padding: 0.45rem 0.7rem;
-  border-radius: 999px;
-  font-size: clamp(0.72rem, 1.7vw, 0.86rem);
-  font-weight: 800;
-  background: rgba(216, 153, 245, 0.72);
-  color: rgba(20, 20, 20, 0.92);
-  box-shadow: 0 0.6rem 1.4rem rgba(216, 153, 245, 0.18);
-}
-
-.kakao-map-area {
+.search-box input {
+  min-width: 0;
   width: 100%;
-  height: clamp(24rem, 65vh, 43rem);
-  border-radius: clamp(1.1rem, 3vw, 1.6rem);
-  overflow: hidden;
-  background: #eeeeee;
-  border: 1px solid rgba(20, 20, 20, 0.08);
-  box-shadow: 0 1rem 2.5rem rgba(20, 20, 20, 0.12);
+
+  border: 0;
+  outline: 0;
+  background: transparent;
+
+  color: #141414;
+  font-size: clamp(0.72rem, 0.85vw, 0.85rem);
 }
 
-.map-error {
-  min-height: clamp(18rem, 50vh, 32rem);
+.search-box button {
+  border: 0;
+  background: transparent;
+  color: #141414;
+  font-size: clamp(0.85rem, 1vw, 1rem);
+  cursor: pointer;
+}
+
+/* 지역 버튼 */
+.region-row {
   display: grid;
-  place-items: center;
-  padding: clamp(1rem, 4vw, 2rem);
-  border-radius: clamp(1.1rem, 3vw, 1.6rem);
-  background: rgba(255, 245, 245, 0.95);
-  border: 1px solid rgba(220, 38, 38, 0.22);
-  color: rgba(160, 30, 30, 0.95);
-  font-size: clamp(0.9rem, 2vw, 1.05rem);
-  font-weight: 700;
-  text-align: center;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(0.45rem, 0.8vw, 0.7rem);
+  margin-bottom: clamp(1.4rem, 2.5vw, 2.4rem);
 }
 
-@media (max-width: 42rem) {
-  .map-section-header {
-    align-items: flex-start;
-    flex-direction: column;
+.region-row button {
+  height: clamp(1.6rem, 2.2vw, 1.95rem);
+
+  border: 0;
+  border-radius: 999rem;
+  background: #dcf7ff;
+
+  color: #6f24b8;
+  font-size: clamp(0.68rem, 0.8vw, 0.8rem);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.region-row button.active {
+  background: #d899f5;
+  color: #141414;
+  box-shadow: 0 0.4rem 0.9rem rgb(216 153 245 / 18%);
+}
+
+/* 필터 */
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.1rem, 1.8vw, 1.7rem);
+}
+
+.filter-section {
+  display: grid;
+  grid-template-columns: clamp(1.5rem, 2vw, 2rem) 1fr;
+  gap: 0.6rem;
+}
+
+.filter-title {
+  color: #6f24b8;
+  font-size: clamp(0.85rem, 1vw, 1rem);
+  font-weight: 900;
+  writing-mode: vertical-rl;
+}
+
+.filter-line {
+  height: 0.07rem;
+  margin-bottom: clamp(0.7rem, 1vw, 0.9rem);
+  background: #707070;
+}
+
+.filter-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.45rem, 0.8vw, 0.75rem);
+}
+
+.filter-chip {
+  height: clamp(1.3rem, 1.9vw, 1.65rem);
+  border: 0.13rem solid #d9f5ff;
+  border-radius: 999rem;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+/* drawer 하단 날씨 */
+.weather-card {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: clamp(3.8rem, 5.5vw, 4.8rem);
+  padding-inline: clamp(0.9rem, 1.4vw, 1.2rem);
+
+  border-top: 0.08rem solid #eeeeee;
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weather-place,
+.weather-info {
+  color: #6f24b8;
+  font-size: clamp(0.85rem, 1vw, 1rem);
+  font-weight: 900;
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sun-icon {
+  color: #f4e436;
+  font-size: clamp(1rem, 1.3vw, 1.3rem);
+}
+
+/* 오른쪽 숫자 */
+.count-circle {
+  position: absolute;
+  top: clamp(1.2rem, 2vw, 2rem);
+  right: clamp(1.2rem, 2vw, 2rem);
+  z-index: 25;
+
+  width: clamp(4rem, 5.5vw, 5.4rem);
+  aspect-ratio: 1;
+
+  border: 0.13rem solid #141414;
+  border-radius: 50%;
+  background: #ddf8e1;
+
+  color: #111111;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+@media (max-width: 48rem) {
+  .main-page {
+    --drawer-width: min(82vw, 21rem);
+    --handle-width: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .category-bar {
+    top: auto;
+    bottom: clamp(0.8rem, 3vw, 1.2rem);
+    width: min(92vw, 33rem);
+    gap: clamp(0.4rem, 1.4vw, 0.7rem);
+  }
+
+  .category-button {
+    min-width: 0;
+    flex: 1;
+    height: clamp(2.25rem, 9vw, 2.8rem);
+    font-size: clamp(0.68rem, 2.6vw, 0.86rem);
+  }
+
+  .count-circle {
+    width: clamp(3.9rem, 14vw, 5rem);
+    font-size: clamp(1.7rem, 7vw, 2.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .left-drawer-wrap,
+  .drawer-toggle-button,
+  .drawer-toggle-button::before {
+    transition: none;
   }
 }
