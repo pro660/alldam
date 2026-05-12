@@ -2,6 +2,52 @@ import { useEffect, useRef, useState } from "react";
 import BoundaryLayer from "../components/map/BoundaryLayer";
 import "../styles/main.css";
 
+const KAKAO_MAP_KEY = process.env.REACT_APP_KAKAO_MAP_KEY;
+
+let kakaoMapSdkPromise = null;
+
+function loadKakaoMapSdk() {
+  if (window.kakao?.maps) {
+    return new Promise((resolve) => {
+      window.kakao.maps.load(resolve);
+    });
+  }
+
+  if (kakaoMapSdkPromise) return kakaoMapSdkPromise;
+
+  kakaoMapSdkPromise = new Promise((resolve, reject) => {
+    if (!KAKAO_MAP_KEY) {
+      reject(new Error("REACT_APP_KAKAO_MAP_KEY가 설정되어 있지 않습니다."));
+      return;
+    }
+
+    const existingScript = document.querySelector("script[data-kakao-map-sdk]");
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => {
+        window.kakao.maps.load(resolve);
+      });
+      existingScript.addEventListener("error", reject);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.setAttribute("data-kakao-map-sdk", "true");
+    script.async = true;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&autoload=false`;
+    script.onload = () => {
+      window.kakao.maps.load(resolve);
+    };
+    script.onerror = () => {
+      reject(new Error("카카오 지도 SDK를 불러오지 못했습니다."));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  return kakaoMapSdkPromise;
+}
+
 const categories = [
   { id: "food", icon: "F", label: "음식점" },
   { id: "public", icon: "P", label: "공공 기관" },
@@ -36,16 +82,17 @@ function Main() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const [activeCategory, setActiveCategory] = useState("food");
   const [activeRegion, setActiveRegion] = useState("");
+  const [mapErrorMessage, setMapErrorMessage] = useState("");
 
   useEffect(() => {
     const container = mapRef.current;
 
     if (!container) return;
-    if (!window.kakao || !window.kakao.maps) return;
 
     let isAlive = true;
+    setMapErrorMessage("");
 
-    window.kakao.maps.load(() => {
+    loadKakaoMapSdk().then(() => {
       if (!isAlive || !container) return;
 
       container.replaceChildren();
@@ -73,6 +120,13 @@ function Main() {
 
       mapInstanceRef.current = map;
       setKakaoMap(map);
+    }).catch((error) => {
+      console.error(error);
+      if (isAlive) {
+        setMapErrorMessage(
+          "카카오 지도를 불러오지 못했습니다. 네트워크 연결과 카카오 JavaScript 키의 허용 도메인을 확인해주세요."
+        );
+      }
     });
 
     return () => {
@@ -99,6 +153,12 @@ function Main() {
   return (
     <main className="main-page">
       <section ref={mapRef} className="map-area" aria-label="카카오 지도" />
+
+      {mapErrorMessage ? (
+        <section className="map-error-panel" role="alert">
+          {mapErrorMessage}
+        </section>
+      ) : null}
 
       <BoundaryLayer map={kakaoMap} />
 
