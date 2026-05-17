@@ -1,0 +1,127 @@
+.terminal-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 0;
+  padding: 0.8rem;
+  border: 0.08rem solid #e3f4fa;
+  border-radius: 0.55rem;
+  background: #fbfeff;
+  color: #141414;
+  animation: ui-fade-up 0.34s ease both;
+}
+
+.terminal-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.terminal-panel-header div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.terminal-panel-header strong {
+  color: #6f24b8;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.terminal-panel-header span {
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.terminal-status {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999rem;
+  background: #dcf7ff;
+  color: #6f24b8;
+  font-size: 0.7rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.terminal-status.loading {
+  animation: ui-soft-pulse 1.2s ease-in-out infinite;
+}
+
+.terminal-status.success {
+  background: #ddf8e1;
+  color: #10722f;
+}
+
+.terminal-status.error {
+  background: #fff1f1;
+  color: #b42318;
+}
+
+.terminal-message {
+  margin: 0;
+  color: #4a4a4a;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.terminal-url {
+  display: block;
+  max-height: 4.8rem;
+  padding: 0.6rem;
+  border: 0.08rem solid #e3f4fa;
+  border-radius: 0.45rem;
+  background: #f6fbfd;
+  color: #39515c;
+  font-size: 0.66rem;
+  line-height: 1.45;
+  overflow: auto;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.terminal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: min(35vh, 18rem);
+  padding-right: 0.15rem;
+  overflow: auto;
+}
+
+.terminal-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 0.65rem 0.7rem;
+  border: 0.08rem solid #d9f5ff;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  animation: ui-fade-up 0.26s ease both;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.terminal-item:hover {
+  border-color: #75d7f5;
+  transform: translateY(-0.08rem);
+  box-shadow: 0 0.35rem 0.85rem rgb(30 58 68 / 10%);
+}
+
+.terminal-item strong {
+  color: #141414;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.terminal-item span {
+  color: #555555;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35;
+}

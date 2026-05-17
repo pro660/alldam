@@ -1,0 +1,189 @@
+.main-page {
+  --drawer-width: min(76vw, 23rem);
+  --handle-width: clamp(2rem, 3vw, 2.5rem);
+  --drawer-shadow: 0.35rem 0 0.9rem rgb(0 0 0 / 8%);
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #dff4df;
+}
+
+.map-area {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #dff4df;
+}
+
+.map-error-panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 22;
+  width: min(86vw, 28rem);
+  padding: 1rem 1.2rem;
+  border: 0.08rem solid #75d7f5;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  box-shadow: 0 0.5rem 1.4rem rgb(0 0 0 / 12%);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.category-bar {
+  position: absolute;
+  top: clamp(0.8rem, 1.5vw, 1.2rem);
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  gap: clamp(0.5rem, 1vw, 0.9rem);
+  padding: 0.25rem;
+  border: 0.08rem solid rgb(255 255 255 / 70%);
+  border-radius: 999rem;
+  background: rgb(255 255 255 / 76%);
+  box-shadow: 0 0.55rem 1.5rem rgb(30 58 68 / 12%);
+  backdrop-filter: blur(0.7rem);
+  transform: translateX(-50%);
+  animation: ui-slide-down 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.category-button {
+  position: relative;
+  min-width: clamp(6rem, 9vw, 8.5rem);
+  height: clamp(2rem, 3vw, 2.5rem);
+  border: 0;
+  border-radius: 999rem;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  color: #141414;
+  font-size: clamp(0.72rem, 0.9vw, 0.88rem);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.category-button::after {
+  content: "";
+  position: absolute;
+  inset: auto 18% 0.2rem;
+  height: 0.16rem;
+  border-radius: 999rem;
+  background: #75d7f5;
+  opacity: 0;
+  transform: scaleX(0.25);
+  transition:
+    opacity 0.2s ease,
+    transform 0.22s ease;
+}
+
+.category-button:hover {
+  transform: translateY(-0.08rem);
+  box-shadow: 0 0.35rem 0.85rem rgb(20 40 48 / 10%);
+}
+
+.category-button.active {
+  background: #f1fbff;
+  color: #4f168f;
+}
+
+.category-button.active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.category-icon {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #eefaff;
+  color: #6f24b8;
+  font-weight: 900;
+}
+
+.auth-link-button,
+.count-circle {
+  position: absolute;
+  right: clamp(1.2rem, 2vw, 2rem);
+  z-index: 25;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+  animation: ui-pop-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-link-button {
+  top: clamp(7rem, 9vw, 8.5rem);
+  width: clamp(3.2rem, 4vw, 4rem);
+  border: 0;
+  background: #ffffff;
+  box-shadow: 0 0.35rem 0.9rem rgb(0 0 0 / 12%);
+  color: #6f24b8;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.count-circle {
+  top: clamp(1.2rem, 2vw, 2rem);
+  width: clamp(4rem, 5.5vw, 5.4rem);
+  border: 0.13rem solid #141414;
+  background: #ddf8e1;
+  color: #111111;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 500;
+}
+
+.auth-link-button:hover,
+.count-circle:hover {
+  transform: translateY(-0.1rem);
+  box-shadow: 0 0.55rem 1.25rem rgb(30 58 68 / 16%);
+}
+
+.auth-link-button:active,
+.count-circle:active {
+  transform: scale(0.96);
+}
+
+@media (max-width: 48rem) {
+  .main-page {
+    --drawer-width: min(82vw, 21rem);
+    --handle-width: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .category-bar {
+    top: auto;
+    bottom: clamp(0.8rem, 3vw, 1.2rem);
+    width: min(92vw, 33rem);
+    gap: clamp(0.4rem, 1.4vw, 0.7rem);
+  }
+
+  .category-button {
+    min-width: 0;
+    flex: 1;
+    height: clamp(2.25rem, 9vw, 2.8rem);
+    font-size: clamp(0.68rem, 2.6vw, 0.86rem);
+  }
+
+  .count-circle {
+    width: clamp(3.9rem, 14vw, 5rem);
+    font-size: clamp(1.7rem, 7vw, 2.5rem);
+  }
+}
