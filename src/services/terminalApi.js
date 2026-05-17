@@ -13,7 +13,7 @@ export function createTerminalRequestUrl(sigun, auth = DEFAULT_TERMINAL_AUTH) {
     user: auth.user,
     code: auth.code,
     sigun,
-    Infra: auth.infra,
+    infra: auth.infra,
   });
 
   return `${API_BASE_URL}/alldam?${params.toString()}`;
