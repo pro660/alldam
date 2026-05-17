@@ -1,133 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import BoundaryLayer from "../components/map/BoundaryLayer";
 import TerminalLayer from "../components/map/TerminalLayer";
+import {
+  CATEGORIES,
+  DEFAULT_MAP_CENTER,
+  FILTER_SECTIONS,
+  REGION_CENTERS,
+  REGIONS,
+} from "../config/appConfig";
+import { navigateTo } from "../routes/Router";
+import { loadKakaoMapSdk } from "../services/kakaoMapLoader";
+import { createTerminalRequestUrl, fetchTerminalData } from "../services/terminalApi";
 import "../styles/main.css";
-
-const KAKAO_MAP_KEY = process.env.REACT_APP_KAKAO_MAP_KEY;
-
-let kakaoMapSdkPromise = null;
-
-function loadKakaoMapSdk() {
-  if (window.kakao?.maps) {
-    return new Promise((resolve) => {
-      window.kakao.maps.load(resolve);
-    });
-  }
-
-  if (kakaoMapSdkPromise) return kakaoMapSdkPromise;
-
-  kakaoMapSdkPromise = new Promise((resolve, reject) => {
-    if (!KAKAO_MAP_KEY) {
-      reject(new Error("REACT_APP_KAKAO_MAP_KEY가 설정되어 있지 않습니다."));
-      return;
-    }
-
-    const existingScript = document.querySelector("script[data-kakao-map-sdk]");
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () => {
-        window.kakao.maps.load(resolve);
-      });
-      existingScript.addEventListener("error", reject);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.setAttribute("data-kakao-map-sdk", "true");
-    script.async = true;
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_KEY}&autoload=false`;
-    script.onload = () => {
-      window.kakao.maps.load(resolve);
-    };
-    script.onerror = () => {
-      reject(new Error("카카오 지도 SDK를 불러오지 못했습니다."));
-    };
-
-    document.head.appendChild(script);
-  });
-
-  return kakaoMapSdkPromise;
-}
-
-const categories = [
-  { id: "terminal", icon: "T", label: "터미널" },
-  { id: "food", icon: "F", label: "음식점" },
-  { id: "public", icon: "P", label: "공공 기관" },
-  { id: "etc", icon: "E", label: "기타 시설" },
-];
-
-const regionItems = ["서산", "당진", "홍성", "예산"];
-
-const regionCenters = {
-  서산: { lat: 36.6893088, lng: 126.5879975 },
-  당진: { lat: 36.8944, lng: 126.6298 },
-  홍성: { lat: 36.6011, lng: 126.6608 },
-  예산: { lat: 36.6827, lng: 126.8489 },
-};
-
-const defaultMapCenter = {
-  lat: 36.7599,
-  lng: 126.6578,
-};
-
-const filterSections = [
-  { title: "읍", count: 3 },
-  { title: "면", count: 6 },
-  { title: "리", count: 3 },
-];
-
-const terminalRequestConfig = {
-  servicekey: "서비스 키",
-  user: "minhyuck",
-  code: "1",
-  infra: "Terminal",
-};
-
-function createTerminalRequestUrl(sigun) {
-  const params = new URLSearchParams({
-    servicekey: terminalRequestConfig.servicekey,
-    user: terminalRequestConfig.user,
-    code: terminalRequestConfig.code,
-    sigun,
-    Infra: terminalRequestConfig.infra,
-  });
-
-  return `http://localhost:8080/alldam?${params.toString()}`;
-}
-
-function createTerminalFallbackUrl(sigun) {
-  const params = new URLSearchParams({ sigun });
-  return `http://localhost:8080/alldam/terminals?${params.toString()}`;
-}
-
-async function fetchTerminalData(sigun, signal) {
-  const urls = [createTerminalRequestUrl(sigun), createTerminalFallbackUrl(sigun)];
-  let lastError = null;
-
-  for (const url of urls) {
-    try {
-      const response = await fetch(url, { signal });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result = await response.json();
-      const data = Array.isArray(result?.data) ? result.data : [];
-
-      return {
-        data,
-        message: result?.message || "터미널 목록 조회 완료",
-        requestUrl: url,
-      };
-    } catch (error) {
-      if (error.name === "AbortError") throw error;
-      lastError = error;
-    }
-  }
-
-  throw lastError || new Error("터미널 목록을 불러오지 못했습니다.");
-}
 
 function Main() {
   const mapRef = useRef(null);
@@ -175,8 +59,8 @@ function Main() {
         }
 
         const center = new window.kakao.maps.LatLng(
-          defaultMapCenter.lat,
-          defaultMapCenter.lng
+          DEFAULT_MAP_CENTER.lat,
+          DEFAULT_MAP_CENTER.lng
         );
 
         const map = new window.kakao.maps.Map(container, {
@@ -216,7 +100,7 @@ function Main() {
     if (!kakaoMap) return;
     if (!activeRegion) return;
 
-    const center = regionCenters[activeRegion];
+    const center = REGION_CENTERS[activeRegion];
     if (!center) return;
 
     const latLng = new window.kakao.maps.LatLng(center.lat, center.lng);
@@ -274,7 +158,7 @@ function Main() {
       <TerminalLayer map={kakaoMap} terminals={isTerminalMode ? terminals : []} />
 
       <section className="category-bar" aria-label="시설 카테고리">
-        {categories.map((category) => (
+        {CATEGORIES.map((category) => (
           <button
             key={category.id}
             type="button"
@@ -288,6 +172,10 @@ function Main() {
           </button>
         ))}
       </section>
+
+      <button type="button" className="auth-link-button" onClick={() => navigateTo("/auth")}>
+        API
+      </button>
 
       <section className={`left-drawer-wrap ${isDrawerOpen ? "open" : "closed"}`}>
         <aside className="left-drawer">
@@ -308,7 +196,7 @@ function Main() {
             </div>
 
             <div className="region-row">
-              {regionItems.map((region) => (
+              {REGIONS.map((region) => (
                 <button
                   key={region}
                   type="button"
@@ -332,13 +220,18 @@ function Main() {
                   </span>
                 </div>
 
-                <p className="terminal-message">{terminalMessage || "터미널 목록을 조회합니다."}</p>
+                <p className="terminal-message">
+                  {terminalMessage || "터미널 목록을 조회합니다."}
+                </p>
 
                 <code className="terminal-url">{terminalRequestUrl}</code>
 
                 <div className="terminal-list">
                   {terminals.map((terminal) => (
-                    <article className="terminal-item" key={`${terminal.terminalName}-${terminal.latitude}-${terminal.longitude}`}>
+                    <article
+                      className="terminal-item"
+                      key={`${terminal.terminalName}-${terminal.latitude}-${terminal.longitude}`}
+                    >
                       <strong>{terminal.terminalName}</strong>
                       <span>{terminal.address}</span>
                       {terminal.phoneNumber ? <span>{terminal.phoneNumber}</span> : null}
@@ -348,7 +241,7 @@ function Main() {
               </section>
             ) : (
               <div className="filter-list">
-                {filterSections.map((section) => (
+                {FILTER_SECTIONS.map((section) => (
                   <section className="filter-section" key={section.title}>
                     <div className="filter-title">{section.title}</div>
 
