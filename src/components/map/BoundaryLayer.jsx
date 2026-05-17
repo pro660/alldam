@@ -5,8 +5,6 @@ const boundaryFileMap = {
   eupmyeondong: "/data/boundaries/eupmyeondong.json",
 };
 
-const targetRegions = ["서산", "당진", "홍성", "예산"];
-
 function BoundaryLayer({ map }) {
   const polygonRefs = useRef([]);
   const overlayRef = useRef(null);
@@ -16,7 +14,7 @@ function BoundaryLayer({ map }) {
   const requestIdRef = useRef(0);
 
   useEffect(() => {
-    if (!map || !window.kakao || !window.kakao.maps) return;
+    if (!map || !window.kakao || !window.kakao.maps) return undefined;
 
     const kakao = window.kakao;
     let isAlive = true;
@@ -103,24 +101,6 @@ function BoundaryLayer({ map }) {
       );
     };
 
-    const isManagedRegion = (feature) => {
-      const props = feature.properties || {};
-      const name = getFeatureName(feature);
-
-      return targetRegions.some((region) => {
-        return (
-          props.region === region ||
-          name.includes(region) ||
-          props.sigunguName?.includes(region) ||
-          props.SIG_KOR_NM?.includes(region) ||
-          props.SIGUNGU_NM?.includes(region) ||
-          props.SGG_NM?.includes(region) ||
-          props.ADM_NM?.includes(region) ||
-          props.adm_nm?.includes(region)
-        );
-      });
-    };
-
     const convertRingToKakaoPath = (ring) => {
       return ring.map(([lng, lat]) => new kakao.maps.LatLng(lat, lng));
     };
@@ -149,7 +129,6 @@ function BoundaryLayer({ map }) {
       }
 
       const preparedFeatures = (geoJson?.features || [])
-        .filter(isManagedRegion)
         .map((feature) => ({
           code: getFeatureCode(feature),
           name: getFeatureName(feature),
