@@ -5,11 +5,27 @@ const boundaryFileMap = {
   eupmyeondong: "/data/boundaries/eupmyeondong.json",
 };
 
-const seosanHighlightStyle = {
-  strokeColor: "#d92d20",
-  fillColor: "#ff4d4f",
-  fillOpacity: 0.24,
-  zIndex: 18,
+const regionBoundaryStyles = {
+  서산: {
+    strokeColor: "#d92d20",
+    fillColor: "#ff4d4f",
+    hoverFillColor: "#ff7875",
+  },
+  당진: {
+    strokeColor: "#f97316",
+    fillColor: "#fb923c",
+    hoverFillColor: "#fdba74",
+  },
+  홍성: {
+    strokeColor: "#ca8a04",
+    fillColor: "#facc15",
+    hoverFillColor: "#fde047",
+  },
+  예산: {
+    strokeColor: "#16a34a",
+    fillColor: "#22c55e",
+    hoverFillColor: "#4ade80",
+  },
 };
 
 function BoundaryLayer({ map }) {
@@ -130,6 +146,20 @@ function BoundaryLayer({ map }) {
       return [];
     };
 
+    const getRegionStyle = (feature) => {
+      const candidates = [
+        feature.region,
+        feature.sigunguName,
+        feature.name,
+      ].filter(Boolean);
+
+      const region = Object.keys(regionBoundaryStyles).find((regionName) => {
+        return candidates.some((value) => value.includes(regionName));
+      });
+
+      return region ? regionBoundaryStyles[region] : null;
+    };
+
     const prepareBoundaryData = (boundaryType, geoJson) => {
       if (pathCacheRef.current[boundaryType]) {
         return pathCacheRef.current[boundaryType];
@@ -147,14 +177,6 @@ function BoundaryLayer({ map }) {
 
       pathCacheRef.current[boundaryType] = preparedFeatures;
       return preparedFeatures;
-    };
-
-    const isSeosanFeature = (feature) => {
-      return (
-        feature.region === "서산" ||
-        feature.sigunguName.includes("서산") ||
-        feature.name.includes("서산")
-      );
     };
 
     const createCustomOverlay = () => {
@@ -202,9 +224,15 @@ function BoundaryLayer({ map }) {
 
       preparedFeatures.forEach((feature) => {
         const { name, code, pathList } = feature;
-        const isSeosan = isSeosanFeature(feature);
-        const featureStyle = isSeosan
-          ? { ...polygonStyle, ...seosanHighlightStyle }
+        const regionStyle = getRegionStyle(feature);
+        const featureStyle = regionStyle
+          ? {
+              ...polygonStyle,
+              strokeColor: regionStyle.strokeColor,
+              fillColor: regionStyle.fillColor,
+              fillOpacity: isDetail ? 0.22 : 0.28,
+              zIndex: 18,
+            }
           : polygonStyle;
 
         pathList.forEach((path) => {
@@ -216,8 +244,8 @@ function BoundaryLayer({ map }) {
 
           kakao.maps.event.addListener(polygon, "mouseover", (mouseEvent) => {
             polygon.setOptions({
-              fillColor: isSeosan ? "#ff7875" : "#d899f5",
-              fillOpacity: 0.35,
+              fillColor: regionStyle?.hoverFillColor || "#d899f5",
+              fillOpacity: 0.38,
             });
 
             const overlay = createCustomOverlay();
