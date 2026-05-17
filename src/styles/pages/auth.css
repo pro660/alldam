@@ -1,5 +1,5 @@
-@import "./base.css";
-@import "./animations.css";
+@import "../base/base.css";
+@import "../base/animations.css";
 
 .auth-page {
   min-height: 100vh;

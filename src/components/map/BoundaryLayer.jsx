@@ -5,6 +5,13 @@ const boundaryFileMap = {
   eupmyeondong: "/data/boundaries/eupmyeondong.json",
 };
 
+const seosanHighlightStyle = {
+  strokeColor: "#d92d20",
+  fillColor: "#ff4d4f",
+  fillOpacity: 0.24,
+  zIndex: 18,
+};
+
 function BoundaryLayer({ map }) {
   const polygonRefs = useRef([]);
   const overlayRef = useRef(null);
@@ -132,12 +139,22 @@ function BoundaryLayer({ map }) {
         .map((feature) => ({
           code: getFeatureCode(feature),
           name: getFeatureName(feature),
+          region: feature.properties?.region || "",
+          sigunguName: feature.properties?.sigunguName || "",
           pathList: getPathListFromGeometry(feature.geometry),
         }))
         .filter((feature) => feature.pathList.length > 0);
 
       pathCacheRef.current[boundaryType] = preparedFeatures;
       return preparedFeatures;
+    };
+
+    const isSeosanFeature = (feature) => {
+      return (
+        feature.region === "서산" ||
+        feature.sigunguName.includes("서산") ||
+        feature.name.includes("서산")
+      );
     };
 
     const createCustomOverlay = () => {
@@ -183,17 +200,23 @@ function BoundaryLayer({ map }) {
         zIndex: isDetail ? 12 : 10,
       };
 
-      preparedFeatures.forEach(({ name, code, pathList }) => {
+      preparedFeatures.forEach((feature) => {
+        const { name, code, pathList } = feature;
+        const isSeosan = isSeosanFeature(feature);
+        const featureStyle = isSeosan
+          ? { ...polygonStyle, ...seosanHighlightStyle }
+          : polygonStyle;
+
         pathList.forEach((path) => {
           const polygon = new kakao.maps.Polygon({
             map,
             path,
-            ...polygonStyle,
+            ...featureStyle,
           });
 
           kakao.maps.event.addListener(polygon, "mouseover", (mouseEvent) => {
             polygon.setOptions({
-              fillColor: "#d899f5",
+              fillColor: isSeosan ? "#ff7875" : "#d899f5",
               fillOpacity: 0.35,
             });
 
@@ -210,8 +233,8 @@ function BoundaryLayer({ map }) {
 
           kakao.maps.event.addListener(polygon, "mouseout", () => {
             polygon.setOptions({
-              fillColor: polygonStyle.fillColor,
-              fillOpacity: polygonStyle.fillOpacity,
+              fillColor: featureStyle.fillColor,
+              fillOpacity: featureStyle.fillOpacity,
             });
 
             if (overlayRef.current) {

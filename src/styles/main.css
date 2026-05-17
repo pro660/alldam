@@ -1,9 +1,9 @@
-@import "./base.css";
-@import "./animations.css";
-@import "./main-layout.css";
-@import "./drawer.css";
-@import "./sidebar-controls.css";
-@import "./terminal-panel.css";
+@import "./base/base.css";
+@import "./base/animations.css";
+@import "./pages/main-layout.css";
+@import "./components/drawer.css";
+@import "./components/sidebar-controls.css";
+@import "./components/terminal-panel.css";
 
 .filter-chip:focus-visible,
 .region-row button:focus-visible,

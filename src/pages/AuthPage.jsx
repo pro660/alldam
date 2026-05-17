@@ -9,7 +9,7 @@ import {
 } from "../features/auth/authConfig";
 import { maskAuthResult } from "../features/auth/authSecurity";
 import { navigateTo } from "../routes/Router";
-import "../styles/auth.css";
+import "../styles/pages/auth.css";
 
 function AuthPage() {
   const [forms, setForms] = useState(initialAuthForms);
