@@ -1,4 +1,6 @@
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8081";
+export const TERMINAL_API_BASE_URL =
+  process.env.REACT_APP_TERMINAL_API_BASE_URL || API_BASE_URL;
 
 export const KAKAO_MAP_KEY = process.env.REACT_APP_KAKAO_MAP_KEY;
 

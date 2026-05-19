@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../config/appConfig";
+import { TERMINAL_API_BASE_URL } from "../config/appConfig";
 
 export const DEFAULT_TERMINAL_AUTH = {
   servicekey: "서비스 키",
@@ -16,12 +16,12 @@ export function createTerminalRequestUrl(sigun, auth = DEFAULT_TERMINAL_AUTH) {
     infra: auth.infra,
   });
 
-  return `${API_BASE_URL}/alldam?${params.toString()}`;
+  return `${TERMINAL_API_BASE_URL}/alldam?${params.toString()}`;
 }
 
 export function createTerminalFallbackUrl(sigun) {
   const params = new URLSearchParams({ sigun });
-  return `${API_BASE_URL}/alldam/terminals?${params.toString()}`;
+  return `${TERMINAL_API_BASE_URL}/alldam/terminals?${params.toString()}`;
 }
 
 export async function fetchTerminalData(sigun, signal) {
